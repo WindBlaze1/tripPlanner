@@ -8,6 +8,8 @@ Initially I thought of using the dfs approach and it would have worked if the gr
 
 ## Some minor assumptions:
 ### the graph can have multiple cycles
+### the road is uni-directional (i.e. we can travel from A to B but not from B to A, if not explicitly mentioned)
+### we can travel to a city multiple times (if there's a cycle) to get maximum reward, as long as we have the necessary remainingTime
 ### there is no negative weight road/city
 ### there is no self loop (CITY_A -> CITY_A is not present in the graph)
 ### there is no repeating road[edge] in input
