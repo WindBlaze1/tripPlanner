@@ -115,7 +115,7 @@ sample op:
 */
 
 
-    int n,t;
+    int n,t,showPath(0);
     string t1,t2;
 
     cin >> n;
@@ -131,13 +131,20 @@ sample op:
     }
 
     cin >> n;
+    // showPath = 1;
     for(int i=n;i;i--){
         cin >> t1 >> t2 >> t;
+
         auto [reward,path] = calcMaxReward(t1,t2,t);
-        if(path!="")
-            cout << reward << ":" << path << endl;
-        else
+
+        if(showPath){
+            if(path!="")
+                cout << reward << ":" << path << endl;
+            else
+                cout << reward << endl;
+        } else {
             cout << reward << endl;
+        }
     }
 
     return 0;
