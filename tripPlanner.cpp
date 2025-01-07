@@ -34,19 +34,20 @@ unordered_map<string, unordered_map<int, int>> visited;
 //     visited[cur] = false; // backtrack
 // }
 
-int calcMaxReward(string& origin, string& dest, int pointsAvl) {
+pair<int,string> calcMaxReward(string& origin, string& dest, int pointsAvl) {
 
     // priority queue [max elems stay up, acc to reward]: {reward, city, remaining points}
-    priority_queue<tuple<int, string, int>> pq;
+    priority_queue<tuple<int, string, int ,string>> pq;
 
     int initialPoints = pointsAvl - cityDetails[origin].visitCost;
-    if (initialPoints < 0) return 0;
-    pq.push({cityDetails[origin].reward, origin, initialPoints});
+    if (initialPoints < 0) return {0,""};
+    pq.push({cityDetails[origin].reward, origin, initialPoints, cityDetails[origin].name});
 
     int maxReward = 0;
+    string finalPath;
 
     while(!pq.empty()) {
-        auto [currentReward, currentCity, remainingPoints] = pq.top();
+        auto [currentReward, currentCity, remainingPoints, curPath] = pq.top();
         pq.pop();
 
         // for checking q state
@@ -59,8 +60,9 @@ int calcMaxReward(string& origin, string& dest, int pointsAvl) {
         }
         visited[currentCity][remainingPoints] = currentReward;
 
-        if (currentCity == dest) {
-            maxReward = max(maxReward, currentReward);
+        if (currentCity == dest && maxReward < currentReward) {
+            maxReward = currentReward;
+            finalPath = curPath;
         }
 
         // explore neighbors
@@ -72,20 +74,22 @@ int calcMaxReward(string& origin, string& dest, int pointsAvl) {
                 pq.push({
                     currentReward + cityDetails[nextCity].reward,
                     nextCity,
-                    remainingPoints - nextCityCost
+                    remainingPoints - nextCityCost,
+                    curPath + "->" + cityDetails[nextCity].name
                 });
             } else {
                 // we can reah next city but cannot spend time in it --> make points negative so it prunes further calc
                 pq.push({
                     currentReward,
                     nextCity,
-                    INT_MIN
+                    INT_MIN,
+                    curPath + "->" + cityDetails[nextCity].name
                 });
             }
         }
     }
 
-    return maxReward;
+    return {maxReward, finalPath};
 
 }
 
@@ -129,7 +133,11 @@ sample op:
     cin >> n;
     for(int i=n;i;i--){
         cin >> t1 >> t2 >> t;
-        cout << calcMaxReward(t1,t2,t) << endl;
+        auto [reward,path] = calcMaxReward(t1,t2,t);
+        if(path!="")
+            cout << reward << ":" << path << endl;
+        else
+            cout << reward << endl;
     }
 
     return 0;
